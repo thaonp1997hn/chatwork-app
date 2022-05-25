@@ -1,6 +1,8 @@
 package demo.common;
 
+import demo.utils.Utilities;
 import io.appium.java_client.AppiumDriver;
+import io.appium.java_client.MobileBy;
 import io.appium.java_client.TouchAction;
 import io.appium.java_client.android.AndroidElement;
 import io.appium.java_client.ios.IOSElement;
@@ -139,15 +141,6 @@ public class BasePage extends PageObject {
         });
     }
 
-    public static String formatNumber(String s) {       //return only number
-        return s.replaceAll("[^0-9]+", "");
-    }
-
-    public static String changeNumberDoubleFormat(Double balanceDouble) {
-        DecimalFormat df = new DecimalFormat("###,###");
-        return df.format(balanceDouble).replaceAll(",", ".");
-    }
-
     public void tabOnPercentLocation(double xPercent, double yPercent) {
         int heightOfScreen = mobileDriver().manage().window().getSize().getHeight();
         int widthOfScreen = mobileDriver().manage().window().getSize().getWidth();
@@ -157,15 +150,24 @@ public class BasePage extends PageObject {
                 .perform();
     }
 
-    public void waitUntilElementEnable(String x) {
-        System.out.println("vao wait==============");
-        WebDriverWait wait = new WebDriverWait(getDriver(), 60);
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath(x)));
-        System.out.println("out wait================");
-    }
-
     public void tabOnCoordinate(int x, int y) {
         TouchAction touchAction = new TouchAction(mobileDriver());
         touchAction.tap(PointOption.point(x, y)).perform();
+    }
+
+    public WebElementFacade getWebElementFacadeByPassTextToXpath(String xpathIOS, String xpathAndroid, String text) {
+        String x;
+        if (Utilities.isCurrentPlatformAndroid())
+            x = xpathAndroid;
+        else x = xpathIOS;
+        return $(String.format(x, text));
+    }
+
+    public WebElementFacade getWebElementFacadeByXpathAndAccessibility(String text) {
+        WebElementFacade e;
+        if (Utilities.isCurrentPlatformAndroid())
+            e = $(String.format("//android.widget.TextView[@text='%s']", text));
+        else e = $(MobileBy.AccessibilityId(text));
+        return e;
     }
 }

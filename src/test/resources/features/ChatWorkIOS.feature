@@ -12,13 +12,19 @@ Feature: ChatWork
     Then verify all functions interacting with message is shown as below
       | function1 | function2 | function3 | function4 | function5 | function6 | function7 | function8 |
       | Edit      | Reaction  | Quote     | Bookmark  | Task      | Link      | Unread    | Delete    |
-    When user reacts "<react>" to "<message>"
+    When user chooses function as below
+      | function        | icon         | message   |
+      | Choose Reaction | <react icon> | <message> |
     Then verify reaction attached to "<message>" is displayed
-    When user edits "<message>" to "<edit message>"
+    When user chooses function as below
+      | function | message   | edit message   |
+      | Edit     | <message> | <edit message> |
     Then verify "<edit message>" is displayed
-    When user deletes "<edit message>"
+    When user chooses function as below
+      | function | message        |
+      | Delete   | <edit message> |
     Then verify "<edit message>" is disappeared
 
     Examples:
-      | message           | edit message       | react |
-      | Nice to meet you! | How are you doing? | Like  |
+      | message           | edit message       | react icon |
+      | Nice to meet you! | How are you doing? | Like       |

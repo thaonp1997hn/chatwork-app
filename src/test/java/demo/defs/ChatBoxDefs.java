@@ -6,9 +6,9 @@ import cucumber.api.java.en.And;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import demo.steps.ChatBoxSteps;
+import demo.utils.Utilities;
 import net.thucydides.core.annotations.Steps;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -26,36 +26,13 @@ public class ChatBoxDefs {
         chatBoxSteps.enterMessage(mess);
         chatBoxSteps.clickBtnSend();
         chatBoxSteps.waitUntilMessageSent(mess);
-        chatBoxSteps.tapOutsideKeyboard();
-
-    }
-
-    @And("^user edits \"([^\"]*)\" to \"([^\"]*)\"$")
-    public void userEditsTo(String mess, String editMess) {
-        chatBoxSteps.tapsOnMessage(mess);
-        chatBoxSteps.chooseFunctionInteractWithMess("Edit");
-        chatBoxSteps.enterEditMessage(editMess);
-        chatBoxSteps.clickBtnDone();
-        chatBoxSteps.waitUntilMessageSent(editMess);
-    }
-
-    @When("^user reacts \"([^\"]*)\" to \"([^\"]*)\"$")
-    public void reactsTo(String react, String mess) {
-        chatBoxSteps.tapsOnMessage(mess);
-        chatBoxSteps.chooseFunctionInteractWithMess("Reaction");
-        chatBoxSteps.chooseReaction(react);
+        if (!Utilities.isCurrentPlatformAndroid())
+            chatBoxSteps.tapOutsideKeyboard();
     }
 
     @When("^user taps on \"([^\"]*)\"$")
     public void userTapsOn(String mess) {
         chatBoxSteps.tapsOnMessage(mess);
-    }
-
-    @When("^user deletes \"([^\"]*)\"$")
-    public void userDeletes(String mess) {
-        chatBoxSteps.tapsOnMessage(mess);
-        chatBoxSteps.chooseFunctionInteractWithMess("Delete");
-        chatBoxSteps.clickBtnDelete(mess);
     }
 
     @Then("^verify all functions interacting with message is shown as below$")
@@ -76,11 +53,40 @@ public class ChatBoxDefs {
 
     @Then("^verify \"([^\"]*)\" is disappeared$")
     public void verifyIsDisappeared(String mess) {
-       chatBoxSteps.verifyMessageIsRemoved(mess);
+        chatBoxSteps.verifyMessageIsRemoved(mess);
     }
 
     @Then("^verify reaction attached to \"([^\"]*)\" is displayed$")
     public void verifyReactionAttachedToIsDisplayed(String mess) {
         chatBoxSteps.verifyReactionIsDisplayed(mess);
+    }
+
+    @When("^user chooses function as below$")
+    public void userChoosesFunctionAsBelow(DataTable dt) {
+        Map<String, String> row = dt.asMaps(String.class, String.class).get(0);
+        String function = row.get("function");
+        String mess = row.get("message");
+        chatBoxSteps.tapsOnMessage(mess);
+        switch (function) {
+            case "Reaction":
+            case "Choose Reaction":
+                chatBoxSteps.chooseFunctionInteractWithMess(function);
+                chatBoxSteps.chooseReaction(row.get("icon"));
+                break;
+            case "Edit":
+                String editMess = row.get("edit message");
+                chatBoxSteps.chooseFunctionInteractWithMess(function);
+                chatBoxSteps.enterEditMessage(editMess);
+                chatBoxSteps.clickBtnDone();
+                chatBoxSteps.waitUntilMessageSent(editMess);
+                break;
+            case "Delete":
+                chatBoxSteps.chooseFunctionInteractWithMess(function);
+                chatBoxSteps.clickBtnDelete(mess);
+                break;
+            default:
+                break;
+
+        }
     }
 }
