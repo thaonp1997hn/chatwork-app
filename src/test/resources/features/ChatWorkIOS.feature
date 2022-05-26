@@ -13,8 +13,8 @@ Feature: ChatWork
       | function1 | function2 | function3 | function4 | function5 | function6 | function7 | function8 |
       | Edit      | Reaction  | Quote     | Bookmark  | Task      | Link      | Unread    | Delete    |
     When user chooses function as below
-      | function        | icon         | message   |
-      | Choose Reaction | <react icon> | <message> |
+      | function | icon         | message   |
+      | Reaction | <react icon> | <message> |
     Then verify reaction attached to "<message>" is displayed
     When user chooses function as below
       | function | message   | edit message   |
